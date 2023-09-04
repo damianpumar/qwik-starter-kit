@@ -11,8 +11,14 @@ export const useCreateUser = routeAction$(
     return user;
   },
   zod$({
-    name: z.string(),
-    email: z.string().email(),
+    name: z.string({
+      required_error: "Name is required",
+    }),
+    email: z
+      .string({
+        required_error: "Name is required",
+      })
+      .email(),
   })
 );
 
@@ -34,7 +40,9 @@ export default component$(() => {
       </Form>
       {createUserAction.value && (
         <div>
-          <h2>User created successfully!</h2>
+          {createUserAction.status === 200 && (
+            <h2>User created successfully!</h2>
+          )}
         </div>
       )}
     </section>
