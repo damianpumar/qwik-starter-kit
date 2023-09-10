@@ -1,239 +1,69 @@
 import { component$ } from "@builder.io/qwik";
-import type { DocumentHead } from "@builder.io/qwik-city";
+import { Form, routeAction$, type DocumentHead } from "@builder.io/qwik-city";
+import { Button, Card, Checkbox, Input, Page, Text } from "~/components";
+import { Center, Container, Flex } from "~/components/system-design/grid";
+
+export const useLogin = routeAction$(async (data, { cookie, env }) => {
+  cookie.set(env.get("SESSION_COOKIE")!, 123, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "strict",
+  });
+
+  return {
+    success: true,
+    firstname: data.firstname,
+    last: data.last,
+  };
+});
 
 export default component$(() => {
+  const action = useLogin();
+
   return (
-    <div>
-      <nav>
-        <div class="container px-4 mx-auto flex flex-wrap items-center justify-between">
-          <div class="w-full relative flex justify-between lg:w-auto lg:static lg:block lg:justify-start">
-            <a
-              class="text-sm font-bold leading-relaxed inline-block mr-4 py-2 whitespace-nowrap uppercase text-white"
-              href="https://www.creative-tim.com/learning-lab/tailwind-starter-kit#/presentation"
-            >
-              CodeScouts platform
-            </a>
-            <button
-              class="cursor-pointer text-xl leading-none px-3 py-1 border border-solid border-transparent rounded bg-transparent block lg:hidden outline-none focus:outline-none"
-              type="button"
-              onclick="toggleNavbar('example-collapse-navbar')"
-            >
-              <i class="text-white fas fa-bars"></i>
-            </button>
-          </div>
-          <div
-            class="lg:flex flex-grow items-center bg-white lg:bg-transparent lg:shadow-none hidden"
-            id="example-collapse-navbar"
-          >
-            <ul class="flex flex-col lg:flex-row list-none mr-auto">
-              <li class="flex items-center">
-                <a
-                  class="lg:text-white lg:hover:text-gray-300 text-gray-800 px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="https://www.creative-tim.com/learning-lab/tailwind-starter-kit#/login"
-                >
-                  <i class="lg:text-gray-300 text-gray-500 far fa-file-alt text-lg leading-lg mr-2"></i>
-                  Docs
-                </a>
-              </li>
-            </ul>
-            <ul class="flex flex-col lg:flex-row list-none lg:ml-auto">
-              <li class="flex items-center">
-                <a
-                  class="lg:text-white lg:hover:text-gray-300 text-gray-800 px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="#pablo"
-                >
-                  <i class="lg:text-gray-300 text-gray-500 fab fa-facebook text-lg leading-lg "></i>
-                  <span class="lg:hidden inline-block ml-2">Share</span>
-                </a>
-              </li>
-              <li class="flex items-center">
-                <a
-                  class="lg:text-white lg:hover:text-gray-300 text-gray-800 px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="#pablo"
-                >
-                  <i class="lg:text-gray-300 text-gray-500 fab fa-twitter text-lg leading-lg "></i>
-                  <span class="lg:hidden inline-block ml-2">Tweet</span>
-                </a>
-              </li>
-              <li class="flex items-center">
-                <a
-                  class="lg:text-white lg:hover:text-gray-300 text-gray-800 px-3 py-4 lg:py-2 flex items-center text-xs uppercase font-bold"
-                  href="#pablo"
-                >
-                  <i class="lg:text-gray-300 text-gray-500 fab fa-github text-lg leading-lg "></i>
-                  <span class="lg:hidden inline-block ml-2">Star</span>
-                </a>
-              </li>
-              <li class="flex items-center">
-                <button
-                  class="bg-white text-gray-800 active:bg-gray-100 text-xs font-bold uppercase px-4 py-2 rounded shadow hover:shadow-md outline-none focus:outline-none lg:mr-1 lg:mb-0 ml-3 mb-3"
-                  type="button"
-                  style="transition: all 0.15s ease 0s;"
-                >
-                  <i class="fas fa-arrow-alt-circle-down"></i> Download
-                </button>
-              </li>
-            </ul>
-          </div>
-        </div>
-      </nav>
-      <main>
-        <section>
-          <div style="background-image: url(../images/background.png); background-size: 100%; background-repeat: no-repeat;"></div>
-          <div class="container mx-auto px-4 h-full">
-            <div class="flex content-center items-center justify-center h-full">
-              <div class="w-full lg:w-4/12 px-4">
-                <div class="relative flex flex-col min-w-0 break-words w-full mb-6 shadow-lg rounded-lg bg-gray-300 border-0">
-                  <div class="rounded-t mb-0 px-6 py-6">
-                    <div class="text-center mb-3">
-                      <h6 class="text-gray-600 text-sm font-bold">
-                        Sign in with
-                      </h6>
-                    </div>
-                    <div class="btn-wrapper text-center">
-                      <button
-                        class="bg-white active:bg-gray-100 text-gray-800 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-2 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs"
-                        type="button"
-                        style="transition: all 0.15s ease 0s;"
-                      >
-                        <img
-                          alt="..."
-                          class="w-5 mr-1"
-                          src="./assets/img/github.svg"
-                        />
-                        Github
-                      </button>
-                      <button
-                        class="bg-white active:bg-gray-100 text-gray-800 font-normal px-4 py-2 rounded outline-none focus:outline-none mr-1 mb-1 uppercase shadow hover:shadow-md inline-flex items-center font-bold text-xs"
-                        type="button"
-                        style="transition: all 0.15s ease 0s;"
-                      >
-                        Google
-                      </button>
-                    </div>
-                    <hr class="mt-6 border-b-1 border-gray-400" />
-                  </div>
-                  <div class="flex-auto px-4 lg:px-10 py-10 pt-0">
-                    <div class="text-gray-500 text-center mb-3 font-bold">
-                      <small>Or sign in with credentials</small>
-                    </div>
-                    <form>
-                      <div class="relative w-full mb-3">
-                        <label
-                          class="block uppercase text-gray-700 text-xs font-bold mb-2"
-                          for="grid-password"
-                        >
-                          Email
-                        </label>
-                        <input
-                          type="email"
-                          class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                          placeholder="Email"
-                          style="transition: all 0.15s ease 0s;"
-                        />
-                      </div>
-                      <div class="relative w-full mb-3">
-                        <label
-                          class="block uppercase text-gray-700 text-xs font-bold mb-2"
-                          for="grid-password"
-                        >
-                          Password
-                        </label>
-                        <input
-                          type="password"
-                          class="border-0 px-3 py-3 placeholder-gray-400 text-gray-700 bg-white rounded text-sm shadow focus:outline-none focus:ring w-full"
-                          placeholder="Password"
-                          style="transition: all 0.15s ease 0s;"
-                        />
-                      </div>
-                      <div>
-                        <label class="inline-flex items-center cursor-pointer">
-                          <input
-                            id="customCheckLogin"
-                            type="checkbox"
-                            class="form-checkbox border-0 rounded text-gray-800 ml-1 w-5 h-5"
-                            style="transition: all 0.15s ease 0s;"
-                          />
-                          <span class="ml-2 text-sm font-semibold text-gray-700 select-none">
-                            Remember me
-                          </span>
-                        </label>
-                      </div>
-                      <div class="text-center mt-6">
-                        <button
-                          class="bg-gray-900 text-white active:bg-gray-700 text-sm font-bold uppercase px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 w-full"
-                          type="submit"
-                          style="transition: all 0.15s ease 0s;"
-                        >
-                          Sign In
-                        </button>
-                      </div>
-                    </form>
-                  </div>
-                </div>
-                <div class="flex flex-wrap mt-6">
-                  <div class="w-1/2">
-                    <a href="#pablo" class="text-gray-300">
-                      <small>Forgot password?</small>
-                    </a>
-                  </div>
-                  <div class="w-1/2 text-right">
-                    <a href="#pablo" class="text-gray-300">
-                      <small>Create new account</small>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <footer class="absolute w-full bottom-0 bg-gray-900 pb-6">
-            <div class="container mx-auto px-4">
-              <hr class="mb-6 border-b-1 border-gray-700" />
-              <div class="flex flex-wrap items-center md:justify-between justify-center">
-                <div class="w-full md:w-4/12 px-4">
-                  <div class="text-sm text-white font-semibold py-1">
-                    Copyright © 2023{" "}
-                    <a
-                      href="https://www.creative-tim.com"
-                      class="text-white hover:text-gray-400 text-sm font-semibold py-1"
-                    >
-                      CodeScouts
-                    </a>
-                  </div>
-                </div>
-                <div class="w-full md:w-8/12 px-4">
-                  <ul class="flex flex-wrap list-none md:justify-end  justify-center">
-                    <li>
-                      <a
-                        href="https://www.creative-tim.com"
-                        class="text-white hover:text-gray-400 text-sm font-semibold block py-1 px-3"
-                      >
-                        About Us
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="https://www.creative-tim.com/presentation"
-                        class="text-white hover:text-gray-400 text-sm font-semibold block py-1 px-3"
-                      >
-                        Blog
-                      </a>
-                    </li>
-                    <li>
-                      <a
-                        href="http://blog.creative-tim.com"
-                        class="text-white hover:text-gray-400 text-sm font-semibold block py-1 px-3"
-                      >
-                        Contact
-                      </a>
-                    </li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-          </footer>
-        </section>
-      </main>
+    <div
+      style={{
+        backgroundImage: "url(/images/background.png)",
+        backgroundSize: "cover",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <Page>
+        <Center>
+          <Card>
+            <Container gap={1} w="400px">
+              <Form action={action} style={{ width: "100%" }}>
+                <Flex direction="column">
+                  <Text h2 my={0}>
+                    Login
+                  </Text>
+
+                  <Input w={24} placeholder="Username" name="firstname" />
+                  <Input
+                    w={24}
+                    placeholder="Password"
+                    htmlType="password"
+                    name="lastname"
+                  />
+
+                  <Checkbox scale={1.5} checked={true}>
+                    Remember
+                  </Checkbox>
+                  <Button type="secondary" mt="10px" htmlType="submit">
+                    Login
+                  </Button>
+                </Flex>
+              </Form>
+              {action.value?.success && (
+                <>
+                  <h2>Logged in</h2>
+                  {action.value.firstname}
+                </>
+              )}
+            </Container>
+          </Card>
+        </Center>
+      </Page>
     </div>
   );
 });
