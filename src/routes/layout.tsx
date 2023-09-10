@@ -1,9 +1,10 @@
 import { component$, Slot } from "@builder.io/qwik";
-import { type RequestHandler } from "@builder.io/qwik-city";
+import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
+import { Page, Divider, Avatar } from "~/components";
 
-// export const useUser = routeLoader$(({ sharedMap }) => {
-//   return sharedMap.get("user");
-// });
+export const useUser = routeLoader$(({ sharedMap }) => {
+  return JSON.parse(sharedMap.get("user"));
+});
 
 export const onRequest: RequestHandler = async ({
   sharedMap,
@@ -14,7 +15,7 @@ export const onRequest: RequestHandler = async ({
   redirect,
 }) => {
   const user = cookie.get(env.get("SESSION_COOKIE")!);
-  sharedMap.set("user", user);
+  sharedMap.set("user", JSON.stringify(user));
 
   if (pathname === "/login/") {
     if (user) {
@@ -41,5 +42,21 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 };
 
 export default component$(() => {
-  return <Slot />;
+  const user = useUser();
+  if (user.value) {
+    return (
+      <Page>
+        <Avatar text="Damian" scale={2} />
+
+        <Divider />
+        <Slot />
+      </Page>
+    );
+  }
+
+  return (
+    <Page>
+      <Slot />
+    </Page>
+  );
 });

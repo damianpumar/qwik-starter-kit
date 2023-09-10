@@ -1,6 +1,8 @@
 import { component$ } from "@builder.io/qwik";
-import { routeAction$, zod$, z, Form } from "@builder.io/qwik-city";
+import { Form, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
+import { Breadcrumbs, Button, Input, Text } from "~/components";
+import { Container, Flex } from "~/components/system-design/grid";
 
 export const useCreateUser = routeAction$(
   async (data, { redirect }) => {
@@ -12,44 +14,59 @@ export const useCreateUser = routeAction$(
     throw redirect(302, "/users");
   },
   zod$({
-    firstName: z.string(),
-    lastName: z.string(),
-    email: z.string().email(),
-    password: z.string(),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
+    email: z.string().email().min(1, "Email is required"),
+    password: z.string().min(1, "Password is required"),
   })
 );
 
 export default component$(() => {
   const createUserAction = useCreateUser();
   return (
-    <section>
-      <h1>Create User</h1>
-      <Form action={createUserAction}>
-        <label>
-          First name
-          <input name="firstName" />
-        </label>
-        <label>
-          Last name
-          <input name="lastName" />
-        </label>
-        <label>
-          Email
-          <input name="email" />
-        </label>
-        <label>
-          Password
-          <input name="password" />
-        </label>
-        <button type="submit">Create</button>
-      </Form>
-      {createUserAction.value && (
-        <div>
-          {createUserAction.status === 200 && (
-            <h2>User created successfully!</h2>
-          )}
-        </div>
-      )}
-    </section>
+    <>
+      <Breadcrumbs
+        items={[{ label: "Users", href: "/users" }, { label: "Create" }]}
+      />
+      <Text h2>Create user</Text>
+
+      <Container gap={1} w="400px">
+        <Form action={createUserAction} style={{ width: "100%" }}>
+          <Flex direction="column">
+            <Input
+              w={24}
+              placeholder="First name"
+              name="firstName"
+              form={createUserAction.value}
+            />
+            <Input
+              w={24}
+              placeholder="Last name"
+              name="lastName"
+              form={createUserAction.value}
+            />
+
+            <Input
+              w={24}
+              placeholder="Email"
+              name="email"
+              form={createUserAction.value}
+            />
+
+            <Input
+              w={24}
+              placeholder="Password"
+              name="password"
+              htmlType="password"
+              form={createUserAction.value}
+            />
+
+            <Button type="secondary" mt="10px" htmlType="submit">
+              Save
+            </Button>
+          </Flex>
+        </Form>
+      </Container>
+    </>
   );
 });

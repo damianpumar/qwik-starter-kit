@@ -7,35 +7,44 @@ import {
   zod$,
 } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
+import { fail } from "assert";
 import { Button, Card, Checkbox, Input, Page, Text } from "~/components";
 import { Center, Container, Flex } from "~/components/system-design/grid";
 
 export const useLogin = routeAction$(
-  async (data, { cookie, env, redirect }) => {
+  async (data, { cookie, env, redirect, fail }) => {
     const prisma = new PrismaClient();
-    const user = await prisma.user.findUniqueOrThrow({
+    const user = await prisma.user.findUnique({
       where: {
         email: data.email,
         password: data.password,
       },
     });
 
-    cookie.set(env.get("SESSION_COOKIE")!, user.id, {
-      path: "/",
-      httpOnly: true,
-      sameSite: "strict",
-    });
+    if (user) {
+      cookie.set(env.get("SESSION_COOKIE")!, user, {
+        path: "/",
+        httpOnly: true,
+        sameSite: "strict",
+      });
 
-    throw redirect(302, "/users");
+      throw redirect(302, "/users");
+    }
+
+    return fail(400, {
+      message: "The email or password are invalid",
+    });
   },
   zod$({
-    email: z.string().email(),
-    password: z.string(),
+    email: z.string().email().min(1, "Email is required"),
+    password: z.string().min(1, "Password is required"),
   })
 );
 
 export default component$(() => {
-  const action = useLogin();
+  const loginUser = useLogin();
+
+  console.log(loginUser);
 
   return (
     <div
@@ -49,25 +58,26 @@ export default component$(() => {
         <Center>
           <Card>
             <Container gap={1} w="400px">
-              <Form action={action} style={{ width: "100%" }}>
+              <Form action={loginUser} style={{ width: "100%" }}>
                 <Flex direction="column">
                   <Text h2 my={0}>
                     Login
                   </Text>
 
-                  <Input w={24} placeholder="Email" name="email" />
-                  {action.value?.failed && (
-                    <p>{action.value.fieldErrors?.email}</p>
-                  )}
+                  <Input
+                    w={24}
+                    placeholder="Email"
+                    name="email"
+                    form={loginUser.value}
+                  />
+
                   <Input
                     w={24}
                     placeholder="Password"
                     htmlType="password"
                     name="password"
+                    form={loginUser.value}
                   />
-                  {action.value?.failed && (
-                    <p>{action.value.fieldErrors?.password}</p>
-                  )}
 
                   <Checkbox scale={1.5} checked={true}>
                     Remember
@@ -75,14 +85,9 @@ export default component$(() => {
                   <Button type="secondary" mt="10px" htmlType="submit">
                     Login
                   </Button>
+                  {loginUser.value?.failed && loginUser.value.message}
                 </Flex>
               </Form>
-              {action.value?.success && (
-                <>
-                  <h2>Logged in</h2>
-                  {action.value.firstname}
-                </>
-              )}
             </Container>
           </Card>
         </Center>

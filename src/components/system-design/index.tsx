@@ -2,7 +2,6 @@
 
 import { qwikify$ } from "@builder.io/qwik-react";
 import * as Geist from "@geist-ui/core";
-import type { InputProps } from "@geist-ui/core/esm/input";
 import { useState } from "react";
 
 export const GeistProvider = qwikify$(Geist.GeistProvider);
@@ -30,25 +29,52 @@ export const Card = qwikify$(Geist.Card, {
   clientOnly: true,
   eagerness: "visible",
 });
-export const Button = qwikify$(Geist.Button, {
-  clientOnly: true,
-  eagerness: "visible",
-});
+export const Button = qwikify$(
+  (props: Geist.ButtonProps & Geist.ScaleProps & { href?: string }) => {
+    if (props.href) {
+      return (
+        <Geist.Link href={props.href} {...props}>
+          <Geist.Button {...props}>{props.children}</Geist.Button>
+        </Geist.Link>
+      );
+    }
 
-interface InputProps extends Geist.InputProps, Geist.ScaleProps {
-  initialValue?: string;
-}
+    return <Geist.Button {...props}>{props.children}</Geist.Button>;
+  },
+  {
+    clientOnly: true,
+    eagerness: "visible",
+  }
+);
+
+type InputProps = Geist.InputProps &
+  Geist.ScaleProps & {
+    form: any;
+  };
 
 export const Input = qwikify$(
-  (props: InputProps) => {
-    const [input, setInput] = useState(props.initialValue);
+  ({ form, ...props }: InputProps) => {
+    const [value, setValue] = useState(props.value);
+    const hasFormErrors =
+      form?.failed && form?.fieldErrors && form?.fieldErrors[props.name!];
+    const errors = hasFormErrors ? form?.fieldErrors[props.name!] : [];
 
     return (
-      <Geist.Input
-        {...props}
-        value={input}
-        onChange={(e) => setInput(e.target.value)}
-      />
+      <>
+        <Geist.Input
+          {...props}
+          type={hasFormErrors ? "error" : "default"}
+          value={value}
+          onChange={(e) => setValue(e.target.value)}
+        />
+        {hasFormErrors && (
+          <span>
+            {errors.map((error: string, i: number) => (
+              <p key={i}>{error}</p>
+            ))}
+          </span>
+        )}
+      </>
     );
   },
   {
@@ -105,3 +131,18 @@ export const Breadcrumbs = qwikify$(
     eagerness: "visible",
   }
 );
+
+export const Divider = qwikify$(
+  () => {
+    return <Geist.Divider />;
+  },
+  {
+    clientOnly: true,
+    eagerness: "visible",
+  }
+);
+
+export const Avatar = qwikify$(Geist.Avatar, {
+  clientOnly: true,
+  eagerness: "visible",
+});

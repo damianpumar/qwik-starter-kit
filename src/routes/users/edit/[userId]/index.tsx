@@ -7,7 +7,7 @@ import {
   zod$,
 } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { Breadcrumbs, Button, Input, Page, Text } from "~/components";
+import { Breadcrumbs, Button, Input, Text } from "~/components";
 import { Container, Flex } from "~/components/system-design/grid";
 
 export const useGetUser = routeLoader$(async ({ params, status }) => {
@@ -16,9 +16,9 @@ export const useGetUser = routeLoader$(async ({ params, status }) => {
   const prisma = new PrismaClient();
   const user = await prisma.user.findUnique({ where: { id: userId } });
   if (!user) {
-    // Set the status to 404 if the user is not found
     status(404);
   }
+
   return user;
 });
 
@@ -37,8 +37,8 @@ export const useEditUser = routeAction$(
     throw redirect(302, "/users");
   },
   zod$({
-    firstName: z.string(),
-    lastName: z.string(),
+    firstName: z.string().min(1, "First name is required"),
+    lastName: z.string().min(1, "Last name is required"),
   })
 );
 
@@ -47,7 +47,7 @@ export default component$(() => {
   const editUserAction = useEditUser();
 
   return (
-    <Page>
+    <>
       <Breadcrumbs
         items={[{ label: "Users", href: "/users" }, { label: "Edit" }]}
       />
@@ -60,13 +60,15 @@ export default component$(() => {
               w={24}
               placeholder="First name"
               name="firstName"
-              initialValue={user.value?.firstName}
+              value={user.value?.firstName}
+              form={editUserAction.value}
             />
             <Input
               w={24}
               placeholder="Last name"
               name="lastName"
-              initialValue={user.value?.lastName}
+              value={user.value?.lastName}
+              form={editUserAction.value}
             />
 
             <Button type="secondary" mt="10px" htmlType="submit">
@@ -75,6 +77,6 @@ export default component$(() => {
           </Flex>
         </Form>
       </Container>
-    </Page>
+    </>
   );
 });

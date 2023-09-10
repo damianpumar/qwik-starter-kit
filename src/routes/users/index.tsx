@@ -1,7 +1,7 @@
 import { component$, $ } from "@builder.io/qwik";
 import { routeLoader$, useNavigate } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { Breadcrumbs, Page, Table, Text } from "~/components";
+import { Breadcrumbs, Button, Header, Table, Text } from "~/components";
 
 export const useGetUsers = routeLoader$(async () => {
   const prisma = new PrismaClient();
@@ -14,9 +14,21 @@ export default component$(() => {
   const navigate = useNavigate();
 
   return (
-    <Page>
+    <>
       <Breadcrumbs items={[{ label: "Users" }]} />
       <Text h2>User's directory</Text>
+
+      <Header>
+        <Button
+          href="/users/create"
+          type="secondary"
+          mb="10px"
+          style={{ float: "right" }}
+        >
+          Create
+        </Button>
+      </Header>
+
       <Table
         table={{
           data: users.value,
@@ -29,6 +41,6 @@ export default component$(() => {
           { prop: "role", label: "Role" },
         ]}
       />
-    </Page>
+    </>
   );
 });
