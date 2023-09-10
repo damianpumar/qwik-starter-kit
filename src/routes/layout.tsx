@@ -1,21 +1,30 @@
 import { component$, Slot } from "@builder.io/qwik";
-import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
-import { CssBaselineQwik, GeistProviderQwik } from "~/components";
+import { type RequestHandler } from "@builder.io/qwik-city";
+import { CssBaseline, GeistProvider } from "~/components";
 
-export const useUser = routeLoader$(({ sharedMap }) => {
-  return sharedMap.get("user");
-});
+// export const useUser = routeLoader$(({ sharedMap }) => {
+//   return sharedMap.get("user");
+// });
 
 export const onRequest: RequestHandler = async ({
   sharedMap,
   cookie,
-  redirect,
   env,
   next,
+  pathname,
+  redirect,
 }) => {
   const user = cookie.get(env.get("SESSION_COOKIE")!);
-  if (user) {
-    sharedMap.set("user", user);
+  sharedMap.set("user", user);
+
+  if (pathname === "/login/") {
+    if (user) {
+      throw redirect(302, "/users");
+    }
+  } else {
+    if (!user) {
+      throw redirect(302, "/login");
+    }
   }
 
   await next();
@@ -34,9 +43,9 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 
 export default component$(() => {
   return (
-    <GeistProviderQwik>
-      <CssBaselineQwik />
+    <GeistProvider>
+      <CssBaseline />
       <Slot />
-    </GeistProviderQwik>
+    </GeistProvider>
   );
 });

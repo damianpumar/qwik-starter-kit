@@ -1,21 +1,38 @@
 import { component$ } from "@builder.io/qwik";
-import { Form, routeAction$, type DocumentHead } from "@builder.io/qwik-city";
+import {
+  Form,
+  routeAction$,
+  type DocumentHead,
+  z,
+  zod$,
+} from "@builder.io/qwik-city";
+import { PrismaClient } from "@prisma/client";
 import { Button, Card, Checkbox, Input, Page, Text } from "~/components";
 import { Center, Container, Flex } from "~/components/system-design/grid";
 
-export const useLogin = routeAction$(async (data, { cookie, env }) => {
-  cookie.set(env.get("SESSION_COOKIE")!, 123, {
-    path: "/",
-    httpOnly: true,
-    sameSite: "strict",
-  });
+export const useLogin = routeAction$(
+  async (data, { cookie, env, redirect }) => {
+    const prisma = new PrismaClient();
+    const user = await prisma.user.findUniqueOrThrow({
+      where: {
+        email: data.email,
+        password: data.password,
+      },
+    });
 
-  return {
-    success: true,
-    firstname: data.firstname,
-    last: data.last,
-  };
-});
+    cookie.set(env.get("SESSION_COOKIE")!, user.id, {
+      path: "/",
+      httpOnly: true,
+      sameSite: "strict",
+    });
+
+    throw redirect(302, "/users");
+  },
+  zod$({
+    email: z.string().email(),
+    password: z.string(),
+  })
+);
 
 export default component$(() => {
   const action = useLogin();
@@ -38,13 +55,19 @@ export default component$(() => {
                     Login
                   </Text>
 
-                  <Input w={24} placeholder="Username" name="firstname" />
+                  <Input w={24} placeholder="Email" name="email" />
+                  {action.value?.failed && (
+                    <p>{action.value.fieldErrors?.email}</p>
+                  )}
                   <Input
                     w={24}
                     placeholder="Password"
                     htmlType="password"
-                    name="lastname"
+                    name="password"
                   />
+                  {action.value?.failed && (
+                    <p>{action.value.fieldErrors?.password}</p>
+                  )}
 
                   <Checkbox scale={1.5} checked={true}>
                     Remember

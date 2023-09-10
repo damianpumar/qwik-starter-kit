@@ -3,22 +3,19 @@ import { routeAction$, zod$, z, Form } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
 
 export const useCreateUser = routeAction$(
-  async (data) => {
+  async (data, { redirect }) => {
     const prisma = new PrismaClient();
-    const user = await prisma.user.create({
+    await prisma.user.create({
       data,
     });
-    return user;
+
+    await redirect(300, "/users");
   },
   zod$({
-    name: z.string({
-      required_error: "Name is required",
-    }),
-    email: z
-      .string({
-        required_error: "Name is required",
-      })
-      .email(),
+    firstName: z.string(),
+    lastName: z.string(),
+    email: z.string().email(),
+    password: z.string(),
   })
 );
 
@@ -29,12 +26,20 @@ export default component$(() => {
       <h1>Create User</h1>
       <Form action={createUserAction}>
         <label>
-          Name
-          <input name="name" value={createUserAction.formData?.get("name")} />
+          First name
+          <input name="firstName" />
+        </label>
+        <label>
+          Last name
+          <input name="lastName" />
         </label>
         <label>
           Email
-          <input name="email" value={createUserAction.formData?.get("email")} />
+          <input name="email" />
+        </label>
+        <label>
+          Password
+          <input name="password" />
         </label>
         <button type="submit">Create</button>
       </Form>
