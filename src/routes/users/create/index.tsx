@@ -9,7 +9,7 @@ export const useCreateUser = routeAction$(
       data,
     });
 
-    await redirect(300, "/users");
+    throw redirect(302, "/users");
   },
   zod$({
     firstName: z.string(),

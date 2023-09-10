@@ -1,6 +1,7 @@
-import { component$ } from "@builder.io/qwik";
-import { routeLoader$ } from "@builder.io/qwik-city";
+import { component$, $ } from "@builder.io/qwik";
+import { routeLoader$, useNavigate } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
+import { Breadcrumbs, Page, Table, Text } from "~/components";
 
 export const useGetUsers = routeLoader$(async () => {
   const prisma = new PrismaClient();
@@ -10,18 +11,24 @@ export const useGetUsers = routeLoader$(async () => {
 
 export default component$(() => {
   const users = useGetUsers();
+  const navigate = useNavigate();
+
   return (
-    <section>
-      <h1>User's directory</h1>
-      <ul>
-        {users.value.map((user) => (
-          <li key={user.id}>
-            <a href={`/users/${user.id}`}>
-              {user.name} ({user.email})
-            </a>
-          </li>
-        ))}
-      </ul>
-    </section>
+    <Page>
+      <Breadcrumbs items={[{ label: "Users" }]} />
+      <Text h2>User's directory</Text>
+      <Table
+        table={{
+          data: users.value,
+          onRow: $((element: any) => navigate(`/users/edit/${element.id}`)),
+        }}
+        columns={[
+          { prop: "firstName", label: "First name" },
+          { prop: "lastName", label: "Last name" },
+          { prop: "email", label: "Email" },
+          { prop: "role", label: "Role" },
+        ]}
+      />
+    </Page>
   );
 });

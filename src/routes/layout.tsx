@@ -1,6 +1,5 @@
 import { component$, Slot } from "@builder.io/qwik";
 import { type RequestHandler } from "@builder.io/qwik-city";
-import { CssBaseline, GeistProvider } from "~/components";
 
 // export const useUser = routeLoader$(({ sharedMap }) => {
 //   return sharedMap.get("user");
@@ -42,10 +41,5 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 };
 
 export default component$(() => {
-  return (
-    <GeistProvider>
-      <CssBaseline />
-      <Slot />
-    </GeistProvider>
-  );
+  return <Slot />;
 });
