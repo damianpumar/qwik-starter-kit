@@ -7,7 +7,6 @@ import {
   zod$,
 } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { fail } from "assert";
 import { Button, Card, Checkbox, Input, Page, Text } from "~/components";
 import { Center, Container, Flex } from "~/components/system-design/grid";
 
@@ -26,6 +25,7 @@ export const useLogin = routeAction$(
         path: "/",
         httpOnly: true,
         sameSite: "strict",
+        maxAge: data.remember ? 24 * 60 * 60 * 7 : undefined,
       });
 
       throw redirect(302, "/users");
@@ -38,6 +38,7 @@ export const useLogin = routeAction$(
   zod$({
     email: z.string().email().min(1, "Email is required"),
     password: z.string().min(1, "Password is required"),
+    remember: z.ostring(),
   })
 );
 
@@ -79,7 +80,7 @@ export default component$(() => {
                     form={loginUser.value}
                   />
 
-                  <Checkbox scale={1.5} checked={true}>
+                  <Checkbox scale={1.5} initialChecked name="remember">
                     Remember
                   </Checkbox>
                   <Button type="secondary" mt="10px" htmlType="submit">
