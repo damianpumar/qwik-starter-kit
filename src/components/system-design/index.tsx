@@ -177,7 +177,25 @@ const Flex = ({ children, ...props }: FlexProps) => {
 };
 
 export const Navbar = qwikify$(
-  ({ fullName }: { fullName: string }) => {
+  ({ fullName, items }: { fullName: string; items: any[] }) => {
+    const userInitials = fullName
+      .split(" ")
+      .map((name) => name[0].toUpperCase())
+      .join("");
+
+    const Content = () => (
+      <>
+        <Geist.Popover.Item title>
+          <span>{fullName}</span>
+        </Geist.Popover.Item>
+        {items.map((item) => (
+          <Geist.Popover.Item key={item.label} onClick={() => item.onClick()}>
+            {item.label}
+          </Geist.Popover.Item>
+        ))}
+      </>
+    );
+
     return (
       <>
         <Flex flexDirection="row" alignItems="center" height="3.5rem">
@@ -195,26 +213,9 @@ export const Navbar = qwikify$(
                   gap: "10px",
                 }}
               >
-                <div style={{ position: "relative" }}>
-                  <ul
-                    style={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                      listStyleType: "none",
-                      gap: "10px",
-                    }}
-                  >
-                    <li>Home</li>
-                    <li>Home</li>
-                    <li>Home</li>
-                  </ul>
-                </div>
-
-                <Geist.Avatar
-                  text={fullName.split(" ")[0][0] + fullName.split(" ")[1][0]}
-                  scale={2}
-                />
+                <Geist.Popover content={Content}>
+                  <Geist.Avatar text={userInitials} scale={2} />
+                </Geist.Popover>
               </nav>
             </>
           </Flex>

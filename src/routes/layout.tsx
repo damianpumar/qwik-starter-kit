@@ -1,15 +1,26 @@
-import { component$, Slot } from "@builder.io/qwik";
-import { routeLoader$, type RequestHandler } from "@builder.io/qwik-city";
+import { component$, Slot, $ } from "@builder.io/qwik";
+import {
+  routeLoader$,
+  type RequestHandler,
+  routeAction$,
+} from "@builder.io/qwik-city";
 import { Page } from "~/components";
 import Private from "./private";
 
 export const useUser = routeLoader$(({ sharedMap }) => {
-  const { id, firstName, lastName } = JSON.parse(
-    JSON.parse(sharedMap.get("user")).value
-  );
+  const user = sharedMap.get("user")?.value;
+
+  if (user) {
+    const { id, firstName, lastName } = JSON.parse(user);
+    return {
+      id,
+      fullName: `${firstName} ${lastName}`,
+      isLoggedIn: true,
+    };
+  }
+
   return {
-    id,
-    fullName: `${firstName} ${lastName}`,
+    isLoggedIn: false,
   };
 });
 
@@ -22,7 +33,7 @@ export const onRequest: RequestHandler = async ({
   redirect,
 }) => {
   const user = cookie.get(env.get("SESSION_COOKIE")!);
-  sharedMap.set("user", JSON.stringify(user));
+  sharedMap.set("user", user);
 
   if (pathname === "/login/") {
     if (user) {
@@ -45,12 +56,30 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
   });
 };
 
+export const useLogoutUser = routeAction$((_, { cookie, env, redirect }) => {
+  cookie.set(env.get("SESSION_COOKIE")!, -1, {
+    path: "/",
+    httpOnly: true,
+    sameSite: "strict",
+    maxAge: -1,
+  });
+
+  throw redirect(302, "/login");
+});
+
 export default component$(() => {
   const user = useUser();
+  const logout = useLogoutUser();
+  const onLogout = $(() => logout.submit());
 
-  if (user.value.id) {
+  const userFullName = user.value.fullName ?? "";
+
+  if (user.value.isLoggedIn) {
     return (
-      <Private fullName={user.value.fullName}>
+      <Private
+        fullName={userFullName}
+        items={[{ label: "Logout", onClick: onLogout }]}
+      >
         <Slot />
       </Private>
     );
