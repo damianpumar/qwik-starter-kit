@@ -8,7 +8,12 @@ import {
 } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
 import { Button, Card, Checkbox, Input, Page, Text } from "~/components";
-import { Center, Container, Flex } from "~/components/system-design/grid";
+import {
+  Center,
+  Container,
+  Flex,
+  VStack,
+} from "~/components/system-design/grid";
 
 export const useLogin = routeAction$(
   async (data, { cookie, env, redirect, fail }) => {
@@ -45,8 +50,6 @@ export const useLogin = routeAction$(
 export default component$(() => {
   const loginUser = useLogin();
 
-  console.log(loginUser);
-
   return (
     <div
       style={{
@@ -60,7 +63,7 @@ export default component$(() => {
           <Card>
             <Container gap={1} w="400px">
               <Form action={loginUser} style={{ width: "100%" }}>
-                <Flex direction="column">
+                <VStack>
                   <Text h2 my={0}>
                     Login
                   </Text>
@@ -87,7 +90,7 @@ export default component$(() => {
                     Login
                   </Button>
                   {loginUser.value?.failed && loginUser.value.message}
-                </Flex>
+                </VStack>
               </Form>
             </Container>
           </Card>

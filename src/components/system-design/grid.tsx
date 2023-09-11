@@ -1,22 +1,17 @@
-import type * as CSS from "csstype";
 import { qwikify$ } from "@builder.io/qwik-react";
 import * as Geist from "@geist-ui/core";
+import type { CSSProperties } from "react";
 
-export const Flex = ({
-  children,
-  direction: flexDirection,
-}: {
-  direction: CSS.Property.FlexDirection | undefined;
+interface FlexProps extends CSSProperties {
   children: any;
-}) => {
+}
+
+export const Flex = ({ children, ...props }: FlexProps) => {
   return (
     <div
       style={{
-        gap: "10px",
+        ...props,
         display: "flex",
-        flexDirection,
-        justifyContent: "space-between",
-        alignItems: "stretch",
         width: "100%",
       }}
     >
@@ -24,6 +19,23 @@ export const Flex = ({
     </div>
   );
 };
+
+export const VStack = ({ children }: FlexProps) => {
+  return (
+    <Flex flexDirection="column" gap="10px">
+      {children}
+    </Flex>
+  );
+};
+
+export const HStack = ({ children }: FlexProps) => {
+  return (
+    <Flex flexDirection="row" justifyContent="space-between" gap="10px">
+      {children}
+    </Flex>
+  );
+};
+
 export const Center = ({ children }: any) => {
   return (
     <div

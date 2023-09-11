@@ -2,7 +2,7 @@ import { component$ } from "@builder.io/qwik";
 import { Form, routeAction$, z, zod$ } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
 import { Breadcrumbs, Button, Input, Text } from "~/components";
-import { Container, Flex } from "~/components/system-design/grid";
+import { Container, VStack } from "~/components/system-design/grid";
 
 export const useCreateUser = routeAction$(
   async (data, { redirect }) => {
@@ -32,7 +32,7 @@ export default component$(() => {
 
       <Container gap={1} w="400px">
         <Form action={createUserAction} style={{ width: "100%" }}>
-          <Flex direction="column">
+          <VStack>
             <Input
               w={24}
               placeholder="First name"
@@ -64,7 +64,7 @@ export default component$(() => {
             <Button type="secondary" mt="10px" htmlType="submit">
               Save
             </Button>
-          </Flex>
+          </VStack>
         </Form>
       </Container>
     </>

@@ -39,6 +39,7 @@ export default component$(() => {
           { prop: "lastName", label: "Last name" },
           { prop: "email", label: "Email" },
           { prop: "role", label: "Role" },
+          { prop: "action", label: "Action" },
         ]}
       />
     </>

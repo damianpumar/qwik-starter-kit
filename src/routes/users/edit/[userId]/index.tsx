@@ -1,4 +1,4 @@
-import { component$ } from "@builder.io/qwik";
+import { component$, useSignal } from "@builder.io/qwik";
 import {
   Form,
   routeAction$,
@@ -7,8 +7,8 @@ import {
   zod$,
 } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { Breadcrumbs, Button, Input, Text } from "~/components";
-import { Container, Flex } from "~/components/system-design/grid";
+import { Breadcrumbs, Button, Input, Modal, Text } from "~/components";
+import { Container, HStack, VStack } from "~/components/system-design/grid";
 
 export const useGetUser = routeLoader$(async ({ params, status }) => {
   const userId = params["userId"];
@@ -42,9 +42,27 @@ export const useEditUser = routeAction$(
   })
 );
 
+export const useDeleteUser = routeAction$(
+  async (data, { redirect }) => {
+    const prisma = new PrismaClient();
+    await prisma.user.delete({
+      where: {
+        id: data.id,
+      },
+    });
+
+    throw redirect(302, "/users");
+  },
+  zod$({
+    id: z.string(),
+  })
+);
+
 export default component$(() => {
   const user = useGetUser();
   const editUserAction = useEditUser();
+  const onDeleteUser = useDeleteUser();
+  const visible = useSignal(false);
 
   return (
     <>
@@ -55,7 +73,7 @@ export default component$(() => {
 
       <Container gap={1} w="400px">
         <Form action={editUserAction} style={{ width: "100%" }}>
-          <Flex direction="column">
+          <VStack>
             <Input
               w={24}
               placeholder="First name"
@@ -71,12 +89,34 @@ export default component$(() => {
               form={editUserAction.value}
             />
 
-            <Button type="secondary" mt="10px" htmlType="submit">
-              Save
-            </Button>
-          </Flex>
+            <HStack>
+              <Button
+                type="error-light"
+                mt="10px"
+                htmlType="button"
+                onClick$={() => {
+                  visible.value = true;
+                }}
+              >
+                Delete
+              </Button>
+
+              <Button type="secondary" mt="10px" htmlType="submit">
+                Save
+              </Button>
+            </HStack>
+          </VStack>
         </Form>
       </Container>
+
+      <Modal
+        visible={visible.value}
+        onClose$={() => (visible.value = false)}
+        onAccept$={() => onDeleteUser.submit({ id: user.value!.id })}
+        title="Delete user?"
+        content="Are you sure you want to delete a user?"
+        subtitle={`${user.value?.firstName} ${user.value?.lastName}`}
+      />
     </>
   );
 });
