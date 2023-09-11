@@ -2,10 +2,7 @@
 // https://geist-ui.dev/en-us/components/loading
 import { qwikify$ } from "@builder.io/qwik-react";
 import * as Geist from "@geist-ui/core";
-import type {
-  TableColumnRender,
-  TableColumnRender,
-} from "@geist-ui/core/esm/table";
+import type { TableColumnRender } from "@geist-ui/core/esm/table";
 import type { CSSProperties } from "react";
 import { useState } from "react";
 
@@ -180,7 +177,7 @@ const Flex = ({ children, ...props }: FlexProps) => {
 };
 
 export const Navbar = qwikify$(
-  (prop: { userName: string }) => {
+  ({ fullName }: { fullName: string }) => {
     return (
       <>
         <Flex flexDirection="row" alignItems="center" height="3.5rem">
@@ -214,7 +211,10 @@ export const Navbar = qwikify$(
                   </ul>
                 </div>
 
-                <Geist.Avatar text={prop.userName ?? "Dam"} scale={2} />
+                <Geist.Avatar
+                  text={fullName.split(" ")[0][0] + fullName.split(" ")[1][0]}
+                  scale={2}
+                />
               </nav>
             </>
           </Flex>

@@ -1,12 +1,10 @@
 import { component$, Slot } from "@builder.io/qwik";
-import { Page, Navbar, Header } from "~/components";
+import { Page, Navbar } from "~/components";
 
-export default component$(({ firstName }: { firstName: string }) => {
+export default component$((props: { fullName: string }) => {
   return (
     <Page>
-      <Header>
-        <Navbar userName={firstName} />
-      </Header>
+      <Navbar {...props} />
 
       <Slot />
     </Page>

@@ -4,7 +4,13 @@ import { Page } from "~/components";
 import Private from "./private";
 
 export const useUser = routeLoader$(({ sharedMap }) => {
-  return JSON.parse(sharedMap.get("user"));
+  const { id, firstName, lastName } = JSON.parse(
+    JSON.parse(sharedMap.get("user")).value
+  );
+  return {
+    id,
+    fullName: `${firstName} ${lastName}`,
+  };
 });
 
 export const onRequest: RequestHandler = async ({
@@ -41,9 +47,10 @@ export const onGet: RequestHandler = async ({ cacheControl }) => {
 
 export default component$(() => {
   const user = useUser();
-  if (user.value) {
+
+  if (user.value.id) {
     return (
-      <Private firstName={user.value.firstName}>
+      <Private fullName={user.value.fullName}>
         <Slot />
       </Private>
     );
