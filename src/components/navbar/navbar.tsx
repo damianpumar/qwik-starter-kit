@@ -16,7 +16,7 @@ export const Navbar = component$(
     return (
       <div class="navbar bg-base-100">
         <div class="flex-1">
-          <a class="btn btn-ghost normal-case text-xl">daisyUI</a>
+          <div class="btn btn-ghost normal-case text-xl">The platform</div>
         </div>
         <div class="flex-none">
           <div class="dropdown dropdown-end">

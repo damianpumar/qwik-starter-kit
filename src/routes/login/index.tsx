@@ -57,7 +57,7 @@ export default component$(() => {
       <div class="hero-content flex-col lg:flex-row-reverse">
         <div class="text-center lg:text-left">
           <h1 class="text-5xl font-bold">Login now!</h1>
-          <p class="py-6">Welcome to our awesome platform</p>
+          <p class="py-6">Welcome to The Platform</p>
         </div>
         <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
           <div class="card-body">
@@ -98,6 +98,19 @@ export default component$(() => {
                   </span>
                 )}
               </div>
+
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Remember</span>
+                  <input
+                    type="checkbox"
+                    name="remember"
+                    class="toggle"
+                    checked
+                  />
+                </label>
+              </div>
+
               <div class="form-control mt-6">
                 <button class="btn btn-primary">Login</button>
               </div>
