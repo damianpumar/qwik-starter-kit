@@ -1,14 +1,12 @@
 import { component$ } from "@builder.io/qwik";
 import {
-  Form,
   routeAction$,
   type DocumentHead,
   z,
   zod$,
+  Form,
 } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { Button, Card, Checkbox, Input, Page, Text } from "~/components";
-import { Center, Container, VStack } from "~/components/system-design/grid";
 
 export const useLogin = routeAction$(
   async (data, { cookie, env, redirect, fail }) => {
@@ -45,52 +43,68 @@ export const useLogin = routeAction$(
 export default component$(() => {
   const loginUser = useLogin();
 
+  const errors = (name: string) => {
+    const hasFormErrors =
+      loginUser.value?.failed &&
+      !!loginUser.value.fieldErrors &&
+      !!loginUser.value.fieldErrors[name];
+
+    return hasFormErrors ? loginUser.value.fieldErrors[name] : [];
+  };
+
   return (
-    <div
-      style={{
-        backgroundImage: "url(/images/background.png)",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      <Page>
-        <Center>
-          <Card>
-            <Container gap={1} w="400px">
-              <Form action={loginUser} style={{ width: "100%" }}>
-                <VStack>
-                  <Text h2 my={0}>
-                    Login
-                  </Text>
-
-                  <Input
-                    w={24}
-                    placeholder="Email"
-                    name="email"
-                    form={loginUser.value}
-                  />
-
-                  <Input
-                    w={24}
-                    placeholder="Password"
-                    htmlType="password"
-                    name="password"
-                    form={loginUser.value}
-                  />
-
-                  <Checkbox scale={1.5} initialChecked name="remember">
-                    Remember
-                  </Checkbox>
-                  <Button type="secondary" mt="10px" htmlType="submit">
-                    Login
-                  </Button>
-                  {loginUser.value?.failed && loginUser.value.message}
-                </VStack>
-              </Form>
-            </Container>
-          </Card>
-        </Center>
-      </Page>
+    <div class="hero min-h-screen bg-base-200">
+      <div class="hero-content flex-col lg:flex-row-reverse">
+        <div class="text-center lg:text-left">
+          <h1 class="text-5xl font-bold">Login now!</h1>
+          <p class="py-6">Welcome to our awesome platform</p>
+        </div>
+        <div class="card flex-shrink-0 w-full max-w-sm shadow-2xl bg-base-100">
+          <div class="card-body">
+            <Form action={loginUser}>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Email</span>
+                </label>
+                <input
+                  type="text"
+                  name="email"
+                  placeholder="Email"
+                  class="input input-bordered"
+                />
+                {loginUser.value?.failed && (
+                  <span>
+                    {errors("email").map((error: string) => (
+                      <p key={error}>{error}</p>
+                    ))}
+                  </span>
+                )}
+              </div>
+              <div class="form-control">
+                <label class="label">
+                  <span class="label-text">Password</span>
+                </label>
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Password"
+                  class="input input-bordered"
+                />
+                {loginUser.value?.failed && (
+                  <span>
+                    {errors("password").map((error: string) => (
+                      <p key={error}>{error}</p>
+                    ))}
+                  </span>
+                )}
+              </div>
+              <div class="form-control mt-6">
+                <button class="btn btn-primary">Login</button>
+              </div>
+            </Form>
+          </div>
+        </div>
+      </div>
     </div>
   );
 });

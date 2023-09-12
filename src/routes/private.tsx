@@ -1,12 +1,12 @@
 import { component$, Slot } from "@builder.io/qwik";
-import { Page, Navbar } from "~/components";
+import { Navbar } from "~/components";
 
 export default component$((props: { fullName: string; items: any[] }) => {
   return (
-    <Page>
-      <Navbar {...props} />
+    <div class="container mx-auto">
+      <Navbar userName={props.fullName} items={props.items} />
 
       <Slot />
-    </Page>
+    </div>
   );
 });

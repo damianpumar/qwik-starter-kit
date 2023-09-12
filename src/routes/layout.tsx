@@ -4,7 +4,6 @@ import {
   type RequestHandler,
   routeAction$,
 } from "@builder.io/qwik-city";
-import { Page } from "~/components";
 import Private from "./private";
 
 export const useUser = routeLoader$(({ sharedMap }) => {
@@ -78,16 +77,12 @@ export default component$(() => {
     return (
       <Private
         fullName={userFullName}
-        items={[{ label: "Logout", onClick: onLogout }]}
+        items={[{ label: "Logout", callback: onLogout }]}
       >
         <Slot />
       </Private>
     );
   }
 
-  return (
-    <Page>
-      <Slot />
-    </Page>
-  );
+  return <Slot />;
 });

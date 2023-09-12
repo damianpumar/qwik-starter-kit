@@ -1,1 +1,1 @@
-export * from "./system-design/index";
+export * from "./navbar";

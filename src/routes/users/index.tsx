@@ -1,7 +1,6 @@
-import { component$, $ } from "@builder.io/qwik";
+import { component$ } from "@builder.io/qwik";
 import { routeLoader$, useNavigate } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { Breadcrumbs, Button, Header, Table, Text } from "~/components";
 
 export const useGetUsers = routeLoader$(async () => {
   const prisma = new PrismaClient();
@@ -15,32 +14,45 @@ export default component$(() => {
 
   return (
     <>
-      <Breadcrumbs items={[{ label: "Users" }]} />
-      <Text h2>User's directory</Text>
+      <div class="flex gap-10 flex-col">
+        <div class="text-sm breadcrumbs">
+          <ul>
+            <li>
+              <a href="/home">Home</a>
+            </li>
+            <li>
+              <a>Users</a>
+            </li>
+          </ul>
+        </div>
+        <h1>Users's directory</h1>
 
-      <Header>
-        <Button
-          href="/users/create"
-          type="secondary"
-          mb="10px"
-          style={{ float: "right" }}
-        >
-          Create
-        </Button>
-      </Header>
-
-      <Table
-        table={{
-          data: users.value,
-          onRow: $((element: any) => navigate(`/users/edit/${element.id}`)),
-        }}
-        columns={[
-          { prop: "firstName", label: "First name" },
-          { prop: "lastName", label: "Last name" },
-          { prop: "email", label: "Email" },
-          { prop: "role", label: "Role" },
-        ]}
-      />
+        <div class="overflow-x-auto">
+          <a href="/users/create" class="btn btn-primary float-right">
+            Create
+          </a>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>First name</th>
+                <th>Last name</th>
+                <th>Email</th>
+                <th>Role</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.value.map(({ id, firstName, lastName, email, role }) => (
+                <tr key={id} onClick$={() => navigate(`/users/edit/${id}`)}>
+                  <td>{firstName}</td>
+                  <td>{lastName}</td>
+                  <td>{email}</td>
+                  <td>{role}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </>
   );
 });

@@ -7,8 +7,6 @@ import {
   zod$,
 } from "@builder.io/qwik-city";
 import { PrismaClient } from "@prisma/client";
-import { Breadcrumbs, Button, Input, Modal, Text } from "~/components";
-import { Container, HStack, VStack } from "~/components/system-design/grid";
 
 export const useGetUser = routeLoader$(async ({ params, status }) => {
   const userId = params["userId"];
@@ -62,61 +60,103 @@ export default component$(() => {
   const user = useGetUser();
   const editUserAction = useEditUser();
   const onDeleteUser = useDeleteUser();
-  const visible = useSignal(false);
+
+  const errors = (name: string) => {
+    const hasFormErrors =
+      editUserAction.value?.failed &&
+      !!editUserAction.value.fieldErrors &&
+      !!editUserAction.value.fieldErrors[name];
+
+    return hasFormErrors ? editUserAction.value.fieldErrors[name] : [];
+  };
 
   return (
     <>
-      <Breadcrumbs
-        items={[{ label: "Users", href: "/users" }, { label: "Edit" }]}
-      />
-      <Text h2>Edit user</Text>
+      <div class="text-sm breadcrumbs">
+        <ul>
+          <li>
+            <a href="/home">Home</a>
+          </li>
+          <li>
+            <a href="/users">Users</a>
+          </li>
+          <li>
+            <a>Edit</a>
+          </li>
+        </ul>
+      </div>
+      <Form action={editUserAction} style={{ width: "100%" }}>
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">First name</span>
+          </label>
+          <input
+            type="text"
+            name="firstName"
+            placeholder="First name"
+            class="input input-bordered"
+            value={user.value?.firstName}
+          />
+          {editUserAction.value?.failed && (
+            <span>
+              {errors("firstName").map((error: string) => (
+                <p key={error}>{error}</p>
+              ))}
+            </span>
+          )}
+        </div>
 
-      <Container gap={1} w="400px">
-        <Form action={editUserAction} style={{ width: "100%" }}>
-          <VStack>
-            <Input
-              w={24}
-              placeholder="First name"
-              name="firstName"
-              value={user.value?.firstName}
-              form={editUserAction.value}
-            />
-            <Input
-              w={24}
-              placeholder="Last name"
-              name="lastName"
-              value={user.value?.lastName}
-              form={editUserAction.value}
-            />
+        <div class="form-control">
+          <label class="label">
+            <span class="label-text">Last name</span>
+          </label>
+          <input
+            type="text"
+            name="lastName"
+            placeholder="Last name"
+            class="input input-bordered"
+            value={user.value?.lastName}
+          />
+          {editUserAction.value?.failed && (
+            <span>
+              {errors("lastName").map((error: string) => (
+                <p key={error}>{error}</p>
+              ))}
+            </span>
+          )}
+        </div>
 
-            <HStack>
-              <Button
-                type="error-light"
-                mt="10px"
-                htmlType="button"
-                onClick$={() => {
-                  visible.value = true;
-                }}
+        <div class="flex gap-5 flex-row mt-5">
+          <button
+            class="btn btn-error"
+            type="button"
+            onclick="deleteModal.showModal()"
+          >
+            Delete
+          </button>
+          <button class="btn">Save</button>
+        </div>
+      </Form>
+
+      <dialog id="deleteModal" class="modal">
+        <div class="modal-box">
+          <h3 class="font-bold text-lg">Delete!</h3>
+          <p class="py-4">Are you sure to delete this user?</p>
+          <div class="modal-action">
+            <form action="" class="flex flex-row gap-5">
+              <button
+                type="button"
+                class="btn btn-error"
+                onClick$={() => onDeleteUser.submit({ id: user.value!.id })}
               >
                 Delete
-              </Button>
+              </button>
 
-              <Button type="secondary" mt="10px" htmlType="submit">
-                Save
-              </Button>
-            </HStack>
-          </VStack>
-        </Form>
-      </Container>
-
-      <Modal
-        visible={visible.value}
-        onClose$={() => (visible.value = false)}
-        onAccept$={() => onDeleteUser.submit({ id: user.value!.id })}
-        title="Delete user?"
-        content="Are you sure you want to delete a user?"
-        subtitle={`${user.value?.firstName} ${user.value?.lastName}`}
-      />
+              <button class="btn">Close</button>
+            </form>
+          </div>
+        </div>
+      </dialog>
     </>
   );
 });
