@@ -77,7 +77,7 @@ export default component$(() => {
     return (
       <Private
         fullName={userFullName}
-        items={[{ label: "Logout", callback: onLogout }]}
+        items={[{ label: "Logout", action: onLogout }]}
       >
         <Slot />
       </Private>
